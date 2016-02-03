@@ -84,7 +84,8 @@ visit: function(){
     }) 
 },
 type: function(input_scope){
-    var currentScope = input_scope;console.log("Enter animal type to find how many animals we have of that type.");
+    var currentScope = input_scope;
+    console.log("Enter animal type to find how many animals we have of that type.");
     prompt.get(['->', 'animal_type'], function(err, result) {
       connection.query('SELECT COUNT(*) AS total FROM `animals` WHERE `type` = ?', [result.animal_type], function(err, results, fields) {
         if (err) throw err;
@@ -94,4 +95,16 @@ type: function(input_scope){
       currentScope.menu();
       currentScope.promptUser();
     }) // end prompt.get
- }
+ },
+  care : function(input_scope){
+    var currentScope = input_scope;
+    console.log("Enter city name NY/SF");
+      prompt.get(["city_name"], function(err, result) {
+        connection.query("SELECT COUNT(*) AS total FROM animals, caretakers WHERE animals.caretaker_id = caretakers.id AND caretakers.city = ?", [result.city_name], function(err, results, fields) {
+        if (err) throw err;
+        console.log("Total animals in " +result.city_name+":" + results[0].total);
+      });
+      currentScope.visit();
+      currentScope.view(currentScope);  
+    });
+  }
