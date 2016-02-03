@@ -35,15 +35,15 @@ var zoo = {
     var currentScope = input_scope;
     console.log("To add an animal to the zoo please fill out the following form for us!");
     prompt.get(["name", "type", "age"], function(err, result){
-      var randCaretaker = Math.floor(Math.random() * 10) + 1; // Creates a random caretake_id for new animal
+      var randCaretaker = Math.floor(Math.random() * 10) + 1; 
       var new_animal = {caretaker_id: randCaretaker, name: result.name, type: result.type, age: result.age};
       var query = connection.query("INSERT INTO animals SET ?", new_animal, function (err, result){
         if(err) {throw err}
       });
-      console.log(result.name + " the " + result.type + " was successfully added to our Zoo!" + "\r\n" + "\r\n");
+      console.log(query.sql);
       currentScope.menu();
       currentScope.promptUser();
-    });
+    })
   },
 visit: function(){
     console.log(" Enter (I): ------> do you know the animal by it's id? We will visit that animal!");
@@ -52,6 +52,6 @@ visit: function(){
     console.log(" Enter (C): ------> here's the count for all animals in this one city!");   
     console.log(" Enter (O): ------> here's the count for all the animals in all locations by the type you specified!");
     console.log(" Enter (Q): ------> Quits to the main menu!");
-    currentScope.visit();
-    currentScope.view(currentScope);
+    // currentScope.visit();
+    // currentScope.view(currentScope);
  
