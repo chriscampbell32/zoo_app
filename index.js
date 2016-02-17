@@ -107,4 +107,116 @@ type: function(input_scope){
       currentScope.visit();
       currentScope.view(currentScope);  
     });
+  },
+
+  animId : function(input_scope){
+    var currentScope = input_scope;
+    console.log("Enter ID of the animal you want to visit");
+    prompt.get("animal_id", function(err, result){
+      connection.query("SELECT * FROM animals WHERE id = ?", [result.animal_id], function(err, results, fields) {
+        if (err) throw err;
+        else {
+          console.log("\r\n" +"Animal ID: " + results[0].id  + "\r\n" +
+                      "Caretaker ID: " + results[0].caretaker_id  + "\r\n" +
+                      "Name: " + results[0].name  + "\r\n" +
+                      "Animal Type: " + results[0].type  + "\r\n" +
+                      "Age: " + results[0].age + "\r\n" + "\r\n");
+        }
+      });
+      currentScope.visit();
+      currentScope.view(currentScope);  
+    });
+  },
+
+  name : function(input_scope){
+    var currentScope = input_scope;
+    console.log("Enter name of the animal you want to visit");
+    prompt.get("animal_name", function(err, result){
+      connection.query("SELECT * FROM animals WHERE name = ?", result.animal_name, function(err, results, fields){if (err) throw err;
+        else {
+          console.log("\r\n" +"Animal Type: " + results[0].type + "\r\n" +
+          "Animal ID: " + results[0].id + "\r\n" +
+          "Caretaker ID: " + results[0].caretaker_id + "\r\n" +
+          "Name: " + results[0].name + "\r\n" +
+          "Age: " + results[0].age + "\r\n" + "\r\n");
+        }
+      });
+      currentScope.visit();
+      currentScope.view(currentScope);  
+    });
+  },
+
+  all : function(input_scope){
+    var currentScope = input_scope;
+    connection.query("SELECT COUNT(DISTINCT id) FROM animals", function(err, results, fields){
+      if (err) throw err;
+      console.log("There are "+results[0]["COUNT(DISTINCT id)"]+" animals at the zoo!");
+    }); 
+    currentScope.menu();
+    currentScope.promptUser();
+  },
+
+  update : function(input_scope){
+    var currentScope = input_scope;
+    prompt.get(["animal_id","new_name","new_age", "new_type","new_caretaker_id"], function(err, result){
+      var update_animal = {name: result.new_name, age: result.new_age, type: result.new_type, caretaker_id: result.new_caretaker_id};
+      var query = connection.query("UPDATE animals SET ? WHERE id=?", [update_animal, result.animal_id], function(err, results, fields){
+        if(err) throw err;
+        console.log("\r\n"+ "You've updated Animal: "+result.animal_id+" with the following information: "+ "\r\n" +
+                    "Animal Name: " + result.new_name + "\r\n"+
+                    "Animal Age: " + result.new_age + "\r\n"+
+                    "Animal Type: " + result.new_type + "\r\n"+
+                    "Caretaker Id " + result.new_caretaker_id);
+      });
+      currentScope.menu();
+      currentScope.promptUser();
+    });
+  },
+
+  adopt : function(input_scope){
+    var currentScope = input_scope;
+    prompt.get(["animal_id"], function(err, result){
+      connection.query("DELETE FROM animals WHERE id=?", result.animal_id ,function(err,results,fields){
+        if (err) throw err; 
+        console.log("Congratulations! Your adoption has been approved. Please take good care of our friend!");
+      });
+      currentScope.visit();
+      currentScope.view(currentScope); 
+    });
+  },
+
+  promptUser : function(){
+    var self = this;
+    prompt.get("input", function(err, result){
+      if (result.input === "Q"){
+        self.exit();
+      }else if (result.input ==="A"){
+        self.add(self);
+      }else if(result.input === "V"){
+        self.visit();
+        self.view(self);
+      }else if(result.input === "D"){
+        self.adopt(self);
+      }else if(result.input === "U"){
+        self.update(self);
+      }else{
+        console.log("Sorry I didn\'t get that, come again?");
+      }
+    })
+  },
+
+  exit : function(){
+    console.log("Thank you for visiting us, goodbye~!");
+    process.exit();
+  },
+
+  open : function(){
+    this.welcome();
+    this.menu();
+    this.promptUser();
   }
+
+} 
+
+zoo.open();
+
